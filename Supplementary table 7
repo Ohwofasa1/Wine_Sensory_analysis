@@ -1,0 +1,45 @@
+
+***VECTORS
+
+                                   NMDS1    NMDS2     r2 Pr(>r)  
+Appearance...Color.density       0.60523 -0.79605 0.8057  0.032 *
+Appearance...Clarity             0.60523 -0.79605 0.8057  0.032 *
+Taste...Sweetness                0.60523 -0.79605 0.8057  0.032 *
+Taste...Acidity                  0.60523 -0.79605 0.8057  0.032 *
+Taste...Bitterness               0.60523 -0.79605 0.8057  0.032 *
+Aroma...Overall.intensity        0.60523 -0.79605 0.8057  0.032 *
+Aroma...Floral                   0.60523 -0.79605 0.8057  0.032 *
+Aroma...Citrus.fruit             0.60523 -0.79605 0.8057  0.032 *
+Aroma...Stone.fruit              0.60523 -0.79605 0.8057  0.032 *
+Aroma...Tropical.fruit           0.60523 -0.79605 0.8057  0.032 *
+Aroma...Red.fruit                0.60523 -0.79605 0.8057  0.032 *
+Aroma...Black.fruit             -0.60523  0.79605 0.8057  0.032 *
+Aroma...Herbaceous               0.60523 -0.79605 0.8057  0.032 *
+Aroma...Herbal                   0.60523 -0.79605 0.8057  0.032 *
+Aroma...Spice                    0.60523 -0.79605 0.8057  0.032 *
+Aroma...Yeast.characteristics    0.60523 -0.79605 0.8057  0.032 *
+Aroma...Oak.characters           0.60523 -0.79605 0.8057  0.032 *
+Aroma...Tertiary.aromas          0.60523 -0.79605 0.8057  0.032 *
+Aroma...other                    0.60523 -0.79605 0.8057  0.032 *
+Flavour...Overall.intensity      0.60523 -0.79605 0.8057  0.032 *
+Flavour...Floral                 0.60523 -0.79605 0.8057  0.032 *
+Flavour...Citrus.fruit           0.60523 -0.79605 0.8057  0.032 *
+Flavour...Stone.fruit            0.60523 -0.79605 0.8057  0.032 *
+Flavour...Tropical.fruit         0.60523 -0.79605 0.8057  0.032 *
+Flavour...Red.fruit              0.60523 -0.79605 0.8057  0.032 *
+Flavour...Black.fruit            0.60523 -0.79605 0.8057  0.032 *
+Flavour...Herbaceous             0.60523 -0.79605 0.8057  0.032 *
+Flavour...Herbal                 0.60523 -0.79605 0.8057  0.032 *
+Flavour...Spice                  0.60523 -0.79605 0.8057  0.032 *
+Flavour...Yeast.characteristics  0.60523 -0.79605 0.8057  0.032 *
+Flavour...Oak.characters         0.60523 -0.79605 0.8057  0.032 *
+Flavour...Tertiary.flavours      0.60523 -0.79605 0.8057  0.032 *
+Flavour...other                  0.60523 -0.79605 0.8057  0.032 *
+Mouth.feel...Body                0.60523 -0.79605 0.8057  0.032 *
+Mouth.feel...Warmth.Alcohol      0.60523 -0.79605 0.8057  0.032 *
+Mouth.feel...Astringency.Tannin -0.60523  0.79605 0.8057  0.032 *
+Mouth.feel...Finish              0.60523 -0.79605 0.8057  0.032 *
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+Permutation: free
+Number of permutations: 999
