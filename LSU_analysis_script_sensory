@@ -1,0 +1,442 @@
+# Loading all required libraries
+library(dada2); packageVersion("dada2")
+library(ggplot2)
+library(phyloseq)
+library(Biostrings)
+library(phangorn)
+library(tibble) 
+library(tidyr)  
+library(ShortRead)
+library(dbplyr)
+library(DECIPHER)   
+library(ape)   
+library(DESeq2)   
+library(ggplot2)    
+library(phyloseq)    
+library(plotly)  
+library(vegan)      
+library(tidyverse)   
+library(adespatial)  
+library(devtools)    
+library(qiime2R)  
+library(MicrobeR)  
+library(microbiome)  
+library(microbiomeSeq)  
+library("pander")  
+library(ranacapa)  
+library(grid)  
+library(gridExtra)   
+library(png)  
+library("ggdendro")  
+library(ggpubr)  
+library(RColorBrewer)  
+library(microbiomeutilities)  
+library(dplyr)
+library(microbiome)
+library(ggdendro)
+library(dendextend)
+library(reshape)
+library(microViz)
+library(lme4)
+library(ggpubr)
+library(ALDEx2)
+
+#
+fnFs <- sort(list.files(path, pattern="_LSUF.forward.fastq", full.names = TRUE))
+fnRs <- sort(list.files(path, pattern="_LSUF.reverse.fastq", full.names = TRUE))
+
+#
+sample.names <- sapply(strsplit(basename(fnFs), "_"), `[`,4)
+
+#
+plotQualityProfile(fnFs[1:2])
+plotQualityProfile(fnRs[1:2])
+
+#
+filtFs <- file.path(path, "filtered", paste0(sample.names, "_F_filt.fastq.gz"))
+filtRs <- file.path(path, "filtered", paste0(sample.names, "_R_filt.fastq.gz"))
+
+#
+names(filtFs) <- sample.names
+names(filtRs) <- sample.names
+
+#
+out <- filterAndTrim(fnFs, filtFs, fnRs, filtRs, truncLen=c(220,200),
+              maxN=0, maxEE=c(2,2), truncQ=2, rm.phix=TRUE,
+              compress=TRUE, multithread=FALSE) 
+ 
+#
+errF <- learnErrors(filtFs, multithread=TRUE)
+errR <- learnErrors(filtRs, multithread=TRUE) 
+
+#
+plotErrors(errF, nominalQ=TRUE)
+plotErrors(errR, nominalQ=TRUE)
+
+#
+dadaFs <- dada(filtFs, err=errF, multithread=TRUE)
+dadaRs <- dada(filtRs, err=errR, multithread=TRUE)
+
+#
+mergers <- mergePairs(dadaFs, filtFs, dadaRs, filtRs, verbose=TRUE)
+
+#
+seqtab <- makeSequenceTable(mergers)
+
+#
+table(nchar(getSequences(seqtab)))
+
+#
+seqtab.nochim <- removeBimeraDenovo(seqtab, method="consensus", multithread=TRUE, verbose=TRUE)
+
+#
+sum(seqtab.nochim)/sum(seqtab)
+
+#
+getN <- function(x) sum(getUniques(x))
+track <- cbind(out, sapply(dadaFs, getN), sapply(dadaRs, getN), sapply(mergers, getN), rowSums(seqtab.nochim))
+colnames(track) <- c("input", "filtered", "denoisedF", "denoisedR", "merged", "nonchim")
+rownames(track) <- sample.names
+write.csv(track,"2018_vs_2021_Sequencing Statistics - LSU.csv")
+
+#
+taxa <- assignTaxonomy(seqtab.nochim, "/nesi/project/landcare02543/data/Ohwofasa/ohwofasaa/ohwofasaa/ohwofasa/Wine_Data_Run_Repeated 02_May_2022/2018_vs_2021_Wine_Matching_Timepoints/LSU_2018_vs_2021/Tax/sh_general_release_s_10.05.2021.tar")
+taxa.print <- taxa 
+
+#
+sequences<- getSequences(seqtab.nochim)
+names(sequences)<-sequences
+
+#
+alignment <- AlignSeqs(DNAStringSet(sequences), anchor=NA)
+
+#
+phang.align <- phyDat(as(alignment, "matrix"), type="DNA")
+
+#
+dm <- dist.ml(phang.align)
+treeNJ <- NJ(dm) 
+fit<- pml(treeNJ, data = phang.align)
+fitGTR <- update(fit, k=4, inv=0.2)
+fitGTR <- optim.pml(fitGTR, model = "GTR", optInv = TRUE, optGamma = TRUE,
+                    rearrangement = "stochastic", control = pml.control(trace = 0))
+ 
+# Metadata
+map <- import_qiime_sample_data("UclustCombinedMicrobiomeData.tsv")
+
+# Creating  Phyloseq object
+ps <- phyloseq(otu_table(seqtab.nochim_final, taxa_are_rows = FALSE),
+              tax_table(taxa.PRINT),phy_tree(fitGTR$tree))
+
+# Merge ps with map
+ps <- merge_phyloseq(ps, map)
+ps
+
+# Fitting sensory variables with NMDS plot
+
+#Extract amd save your tree
+
+tree1 = phy_tree(ps)
+ape::write.tree(tree1, "/scale_wlg_persistent/filesets/project/landcare02543/data/Ohwofasa/ohwofasaa/ohwofasaa/ohwofasa/Wine_Data_Run_Repeated 02_May_2022/Sensory_Correlation/Fungi_Data_2021/LSU_Data_2021_samples/tree1")
+#Load Abundance Table
+abund_table<-read.csv("abund_table.csv",row.names=1,check.names=FALSE)
+
+#Read environmental variable
+ENV<- read.csv("ENV.csv")
+
+# nmds plot
+nmds<-metaMDS(abund_table,distance = "bray", k = 2, trymax = 50)
+
+# Call nmds to see plot
+nmds
+
+# Actual envfit
+
+en <- envfit(nmds, ENV[,2:8], permu=999)
+
+# Making plot
+
+plot(nmds, type="t") ##remove type="t" if you dont like the "ASVs" and sample labels
+plot(en, p.max=0.05)
+ordispider(nmds, Location, label = F)
+cols <- c('purple', 'green') 
+ordiellipse(nmds, Location, kind="se", conf=0.95, lwd=1, col = cols)
+ordispider(nmds, Location, col=cols, label = F)
+ordiellipse(nmds, Location, col = cols, kind = "ehull", lwd=3)
+legend('topleft', legend = "Bray Curtis, stress= 0.09", bty = "n",cex=1.2)
+
+#
+set.seed(711)
+level_order <- c('Outdoor', 'Indoor')
+
+DATA.2 <- ps  
+#DATA.2 = DATA.fun 
+
+df = as.data.frame(sample_data(DATA.2))
+df$LibrarySize = sample_sums(DATA.2)
+df = df[order(df$LibrarySize),]
+df$Index = seq(nrow(df))
+
+#
+ggplot(data=df, aes(x=Index, y=LibrarySize, colour= Treatment))+
+  geom_point()+
+  facet_wrap(~ factor(Treatment, level = level_order)) +
+  scale_y_continuous(trans='sqrt')
+
+#
+physeq.gen <- aggregate_taxa(ps,"Genus")
+dom.tax <- dominant_taxa(ps,level = "Genus",group="Location")
+head(dom.tax$dominant_overview)
+
+#Get count of phyla
+table(phyloseq::tax_table(ps)[, "Phylum"])
+
+#Get count of Genus
+table(phyloseq::tax_table(ps)[, "Genus"])
+
+# Compute prevalence of each feature
+prevdf <- apply(X = otu_table(ps), 
+               MARGIN = ifelse(taxa_are_rows(ps), yes = 1, no = 2), 
+               FUN = function(x){sum(x > 0)})
+
+# Add taxonomy and total read counts to this data.frame 
+prevdf <- data.frame(Prevalence = prevdf,
+                    TotalAbundance = taxa_sums(ps),
+                    tax_table(ps))
+                    
+# Compute the total and average prevalences of the features in each phylum.
+plyr::ddply(prevdf, "Phylum", function(df1){cbind(mean(df1$Prevalence),sum(df1$Prevalence))})
+
+# Giving our seq headers more manageable names (ASV_1, ASV_2...)
+asv_seqs <- colnames(seqtab.nochim_final)
+asv_headers <- vector(dim(seqtab.nochim_final)[2], mode="character")
+
+for (i in 1:dim(seqtab.nochim_final)[2]) {
+  asv_headers[i] <- paste(">ASV", i, sep="_")
+}
+
+# Making and writing out a fasta of our final ASV seqs:
+    
+asv_fasta <- c(rbind(asv_headers, asv_seqs))
+write(asv_fasta, "ASVs.fa")
+
+# count table:
+asv_tab <- t(seqtab.nochim_final)
+row.names(asv_tab) <- sub(">", "", asv_headers)
+write.table(asv_tab, "ASVs_counts.tsv", sep="\t", quote=F, col.names=NA)
+
+# Giving taxonomy table corresponding names as above (ASV_1, ASV_2...)
+row.names(taxa.PRINT) <- sub(">", "", asv_headers)
+write.table(taxa.PRINT, "ASVs_named_correctly.tsv", sep="\t", quote=F, col.names=NA)
+
+#
+vector_for_decontam <- rep(FALSE, 16)
+contam_df <- isContaminant(t(asv_tab), neg=vector_for_decontam)
+table(contam_df$contaminant)
+
+#
+tax_tab <- as.matrix(read.table("ASVs_named_correctly.tsv", header=T,
+           row.names=1, check.names=F, sep="\t"))
+
+sample_info_tab <- read.table("UclustCombinedMicrobiomeData.tsv", header=F, row.names=1,
+                   check.names=F, sep="\t")
+
+sample_info_tab$Ferment_Stage<- as.character(sample_info_tab$V3)
+
+sample_info_tab$Location <- as.character(sample_info_tab$V4)
+
+sample_info_tab$color<- as.character(sample_info_tab$V5)
+
+count_tab <- read.table("ASVs_counts.tsv", header=T, row.names=1,
+             check.names=F, sep="\t")
+
+#Normalizing for sampling depth
+
+deseq_counts <- DESeqDataSetFromMatrix(count_tab, colData = sample_info_tab, design = ~Location) 
+deseq_counts_vst <- varianceStabilizingTransformation(deseq_counts)
+vst_trans_count_tab <- assay(deseq_counts_vst)
+
+#Rarefaction curves
+rarecurve(t(count_tab), step=100, col=sample_info_tab$color, lwd=2, ylab="ASVs", label=F)
+abline(v=(min(rowSums(t(count_tab))))) # and adding a vertical line at the fewest seqs in any sample
+
+# Abundance value transformation. 
+ps_rel_abund <- phyloseq::transform_sample_counts(ps, function(x){x / sum(x)})
+
+#Plot top 6 Genera
+
+mycols <- c("green", "red")
+ps.ge1 <- aggregate_taxa(ps, "Genus")
+top_six <- top_taxa(ps.ge1, 6)
+top_six
+
+top_ge <- plot_listed_taxa(ps.spp1, top_six, 
+                 group= "Location",
+                 group.order = c("Outdoor","Indoor"),
+                 group.colors = mycols,
+                 add.violin = F,
+                 dot.opacity = 0.25,
+                 box.opacity = 0.25,
+                 panel.arrange= "wrap",pan)
+
+comps <- make_pairs(sample_data(ps.spp1)$Location)
+p <- top_ge + stat_compare_means(
+      comparisons = comps,
+      label = "p.format", vjust = 0.19)
+
+print(p + ylab("Relative abundance") + scale_y_continuous(labels = scales::percent))
+
+
+#Agglomerate to phylum-level and rename
+
+ps_phylum <- phyloseq::tax_glom(ps, "Phylum")
+phyloseq::taxa_names(ps_phylum) <- phyloseq::tax_table(ps_phylum)[, "Phylum"]
+phyloseq::otu_table(ps_phylum)[1:3, 1:3]
+
+#Relative Abundance plot
+#Subsetting by Location to genus Level. First create a combined Location object
+
+ps_genus_location <- phyloseq::tax_glom(ps, "Genus")
+phyloseq::taxa_names(ps_genus_location) <- phyloseq::tax_table(ps_genus_location)[, "Genus"]
+phyloseq::otu_table(ps_genus_location)[1:4, 1:4]
+
+#Subset groups to Outdoor
+Gen_Vineyard <- phyloseq::subset_samples(ps_genus_location, Location == "Outdoor")
+
+#Subset group to Indoor
+Gen_Winery <- phyloseq::subset_samples(ps_genus_location, Location == "Indoor")
+
+
+# ### Vineyard Genera
+
+ps_vineyard_rel_vine <- microbiome::transform(Vineyard_ge_ps, "compositional")
+
+ps_vineyard_rel_vine <- Vineyard_ge_ps %>%
+  aggregate_rare(level = "Genus", detection = 0.0001, prevalence = 70/100) %>% 
+  microbiome::transform(transform = "compositional")
+
+###Core Fungi Microbiome associated with the Vineyard Location
+core_members(ps_vineyard_rel_vine, detection = 0.0001, prevalence = 70/100)
+
+
+# ### Winery Genera
+
+ps_winery_rel_vine <- microbiome::transform(Winery_ge_ps, "compositional")
+
+ps_winery_rel_vine <- Winery_ge_ps %>%
+  aggregate_rare(level = "Genus", detection = 0.0001, prevalence = 70/100) %>% 
+  microbiome::transform(transform = "compositional")
+
+###Core Fungi Microbiome associated with the Winery Location
+core_members(ps_winery_rel_vine, detection = 0.0001, prevalence = 70/100)
+
+
+### Permanova
+otu <- abundances(ps_rel_abund)
+meta <- meta(ps_rel_abund)
+    
+#Statistics - Bdiv
+permanova <- adonis(t(otu) ~ Location, data = meta, permutations=1000, method = "bray")
+
+#P-value
+print(as.data.frame(permanova$aov.tab)["Location", "Pr(>F)"])
+
+
+
+# Alpha Diversity
+
+library(picante)
+set.seed(123)
+
+
+adiv %>%
+  gather(key = metric, value = value, c("Observed", "Shannon", "InvSimpson")) %>%
+  mutate(metric = factor(metric, levels = c("Observed", "Shannon", "InvSimpson"))) %>%
+  ggplot(aes(x = Location, y = value)) +
+  geom_boxplot(outlier.color = NA) +
+  geom_jitter(aes(color = Location), height = 0, width = .2) +
+  labs(x = "", y = "") +
+  facet_wrap(~ metric, scales = "free") +
+  theme(legend.position="none") + stat_compare_means(method = "wilcox.test")
+
+# Individual plots
+
+adiv %>%
+  gather(key = metric, value = value, "Shannon") %>%
+  mutate(metric = factor(metric, levels = "Shannon")) %>%
+  ggplot(aes(x = Location, y = value)) +
+  geom_boxplot(outlier.color = NA) +
+  geom_jitter(aes(color = Location), height = 0, width = 0.2) +
+  labs(x = "", y = "Shannon Index") +
+  theme(legend.position="none")
+
+#Extract meta data
+
+ps.meta <- meta(ps)
+(head(ps.meta))
+
+#Add the diversity table to metadata
+
+ps.meta$Shannon <- adiv$Shannon 
+ps.meta$InverseSimpson <- adiv$InvSimpson
+ps.meta$Observed <- adiv$Observed
+
+# create a list of pairwise comaprisons
+
+Ferment_Loc <- levels(ps.meta$Location)
+
+Ferment_Loc <- unique(ps.meta$Location)
+print(Ferment_Loc)
+
+# make a pairwise list that we want to compare.
+Ferment_loc.pairs <-  combn(seq_along(Ferment_Loc), 2, simplify = FALSE, FUN = function(i)Ferment_Loc[i])                     
+                            
+print(Ferment_loc.pairs)
+
+# Using ggpubr to plot
+
+p1 <- ggboxplot(ps.meta, x = "Location", y = "Shannon",
+ , fill = "Location", palette = c("#b2df8a", "#D55E00")) 
+
+Shannon_alpha_diveristy <- p1 + stat_compare_means(comparisons = Ferment_loc.pairs) 
+print(Shannon_alpha_diveristy)
+
+
+#Wilcoxon test (Shannon)
+wilcox.test(Shannon ~ Location, data = adiv, conf.int = TRUE) 
+
+#Run a Shapiro-Wilk test of normality
+shapiro.test(alpha.diversity$Shannon)
+
+#Beta-diversity
+
+ord_unifrac <- ordinate(ps_rel_abund, method = "PCoA", distance = "wunifrac") 
+ord_unifrac_un <- ordinate(ps_rel_abund, method = "PCoA", distance = "unifrac") 
+
+
+anosim(ord_unifrac$values, sample_info_tab$Location, permutations = 1000) # Apply anosim using weighted unifrac
+
+anosim(ord_unifrac_un$values, sample_info_tab$Location, permutations = 1000) ##  Apply anosim using unweighted unifrac 
+
+#Differential Abundance using DESeq2
+sample_data(ps)$Location <- as.factor(sample_data(ps)$Location)
+
+ds <- phyloseq_to_deseq2(ps, ~ Location)
+ds <-  DESeq(ds)
+
+alpha <- 0.05
+res <- results(ds, contrast=c("Location", "Outdoor", "Indoor"), alpha=alpha)
+res <- res[order(res$padj, na.last=NA), ]
+res_sig <- res[(res$padj < alpha), ]
+res_sig
+
+
+res_sig <- cbind(as(res_sig, "data.frame"), as(tax_table(ps)[rownames(res_sig), ], "matrix"))
+colnames(res_sig) <- make.unique(names(res_sig))
+ ggplot(res_sig, aes(x=Genus, y=log2FoldChange, color=Genus)) +
+    geom_jitter(size=3, width = 0.2) +
+    theme(axis.text.x = element_text(angle = -90, hjust = 0, vjust=0.5))
+    
+res_sig
+
+write.csv(res_sig, "Vineyard_vs_Winery.csv")
