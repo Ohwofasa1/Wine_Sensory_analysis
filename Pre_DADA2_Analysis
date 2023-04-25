@@ -1,0 +1,30 @@
+###download raw data
+
+bcl2fastq --processing-threads 8 --create-fastq-for-index-reads --use-bases-mask Y251,I8,I8,Y251 --runfolder-dir ./ --barcode-mismatches 0 --output-dir LSU_Data
+
+
+## make analysis directory
+mkdir analysis.MLD
+
+##copy fastq data over
+cp ./LSU_Data/*.fastq.gz ./analysis.MLD/
+
+
+## change directory
+cd ./analysis.MLD
+
+
+########################################################################
+########################################################################
+
+## Demultiplex LSU - order of the lane files matter!
+
+ clsplitseq --runname=LSU_Data --truncateN=enable --index1file=index1-edit.txt --index2file=index2-edit.txt --primerfile=fwd.primer.LSU.Ns.txt --reverseprimerfile=rev.primer.LSU.Ns.txt --minqualtag=20 --numthreads=8 Undetermined_S0_L001_R1_001.fastq.gz Undetermined_S0_L001_I1_001.fastq.gz Undetermined_S0_L001_I2_001.fastq.gz Undetermined_S0_L001_R2_001.fastq.gz Demultiplexed_LSU
+
+# Change directory
+
+cd ./Demultiplexed_LSU
+
+# Removing "undetermined" files.
+
+rm *undetermined*fastq.gz
