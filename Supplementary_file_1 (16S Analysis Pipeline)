@@ -367,18 +367,6 @@ ps_winery_rel_vine <- Winery_ge_ps %>%
 core_members(ps_winery_rel_vine, detection = 0.0001, prevalence = 70/100)
 
 
-### Permanova
-otu <- abundances(ps_rel_abund)
-meta <- meta(ps_rel_abund)
-    
-#Statistics - Bdiv
-permanova <- adonis(t(otu) ~ Location, data = meta, permutations=1000, method = "bray")
-
-#P-value
-print(as.data.frame(permanova$aov.tab)["Location", "Pr(>F)"])
-
-
-
 # Alpha Diversity
 
 library(picante)
