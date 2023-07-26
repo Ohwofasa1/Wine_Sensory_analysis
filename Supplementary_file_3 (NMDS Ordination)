@@ -1,0 +1,99 @@
+##  Fitting NMDS ordination for bacterial community with sensory data 
+
+***VECTORS
+
+                                   NMDS1    NMDS2     r2 Pr(>r)    
+Appearance...Color.density       0.75431  0.65652 0.3599  0.001 ***
+Appearance...Clarity             0.75431  0.65652 0.3599  0.001 ***
+Taste...Sweetness                0.75431  0.65652 0.3599  0.001 ***
+Taste...Acidity                  0.75431  0.65652 0.3599  0.001 ***
+Taste...Bitterness               0.75431  0.65652 0.3599  0.001 ***
+Aroma...Overall.intensity        0.75431  0.65652 0.3599  0.001 ***
+Aroma...Floral                   0.75431  0.65652 0.3599  0.001 ***
+Aroma...Citrus.fruit             0.75431  0.65652 0.3599  0.001 ***
+Aroma...Stone.fruit              0.75431  0.65652 0.3599  0.001 ***
+Aroma...Tropical.fruit           0.75431  0.65652 0.3599  0.001 ***
+Aroma...Red.fruit                0.75431  0.65652 0.3599  0.001 ***
+Aroma...Black.fruit             -0.75431 -0.65652 0.3599  0.001 ***
+Aroma...Herbaceous               0.75431  0.65652 0.3599  0.001 ***
+Aroma...Herbal                   0.75431  0.65652 0.3599  0.001 ***
+Aroma...Spice                    0.75431  0.65652 0.3599  0.001 ***
+Aroma...Yeast.characteristics    0.75431  0.65652 0.3599  0.001 ***
+Aroma...Oak.characters           0.75431  0.65652 0.3599  0.001 ***
+Aroma...Tertiary.aromas          0.75431  0.65652 0.3599  0.001 ***
+Aroma...other                    0.75431  0.65652 0.3599  0.001 ***
+Flavour...Overall.intensity      0.75431  0.65652 0.3599  0.001 ***
+Flavour...Floral                 0.75431  0.65652 0.3599  0.001 ***
+Flavour...Citrus.fruit           0.75431  0.65652 0.3599  0.001 ***
+Flavour...Stone.fruit            0.75431  0.65652 0.3599  0.001 ***
+Flavour...Tropical.fruit         0.75431  0.65652 0.3599  0.001 ***
+Flavour...Red.fruit              0.75431  0.65652 0.3599  0.001 ***
+Flavour...Black.fruit            0.75431  0.65652 0.3599  0.001 ***
+Flavour...Herbaceous             0.75431  0.65652 0.3599  0.001 ***
+Flavour...Herbal                 0.75431  0.65652 0.3599  0.001 ***
+Flavour...Spice                  0.75431  0.65652 0.3599  0.001 ***
+Flavour...Yeast.characteristics  0.75431  0.65652 0.3599  0.001 ***
+Flavour...Oak.characters         0.75431  0.65652 0.3599  0.001 ***
+Flavour...Tertiary.flavours      0.75431  0.65652 0.3599  0.001 ***
+Flavour...other                  0.75431  0.65652 0.3599  0.001 ***
+Mouth.feel...Body                0.75431  0.65652 0.3599  0.001 ***
+Mouth.feel...Warmth.Alcohol      0.75431  0.65652 0.3599  0.001 ***
+Mouth.feel...Astringency.Tannin -0.75431 -0.65652 0.3599  0.001 ***
+Mouth.feel...Finish              0.75431  0.65652 0.3599  0.001 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+Permutation: free
+Number of permutations: 999
+
+
+
+
+
+
+#### Fungal Data
+
+
+***VECTORS
+
+                                    NMDS1     NMDS2     r2 Pr(>r)   
+Appearance...Color.density       0.081543  0.996670 0.2583  0.002 **
+Appearance...Clarity             0.081543  0.996670 0.2583  0.002 **
+Taste...Sweetness                0.081543  0.996670 0.2583  0.002 **
+Taste...Acidity                  0.081543  0.996670 0.2583  0.002 **
+Taste...Bitterness               0.081543  0.996670 0.2583  0.002 **
+Aroma...Overall.intensity        0.081543  0.996670 0.2583  0.002 **
+Aroma...Floral                   0.081543  0.996670 0.2583  0.002 **
+Aroma...Citrus.fruit             0.081543  0.996670 0.2583  0.002 **
+Aroma...Stone.fruit              0.081543  0.996670 0.2583  0.002 **
+Aroma...Tropical.fruit           0.081543  0.996670 0.2583  0.002 **
+Aroma...Red.fruit                0.081543  0.996670 0.2583  0.002 **
+Aroma...Black.fruit             -0.081543 -0.996670 0.2583  0.002 **
+Aroma...Herbaceous               0.081543  0.996670 0.2583  0.002 **
+Aroma...Herbal                   0.081543  0.996670 0.2583  0.002 **
+Aroma...Spice                    0.081543  0.996670 0.2583  0.002 **
+Aroma...Yeast.characteristics    0.081543  0.996670 0.2583  0.002 **
+Aroma...Oak.characters           0.081543  0.996670 0.2583  0.002 **
+Aroma...Tertiary.aromas          0.081543  0.996670 0.2583  0.002 **
+Aroma...other                    0.081543  0.996670 0.2583  0.002 **
+Flavour...Overall.intensity      0.081543  0.996670 0.2583  0.002 **
+Flavour...Floral                 0.081543  0.996670 0.2583  0.002 **
+Flavour...Citrus.fruit           0.081543  0.996670 0.2583  0.002 **
+Flavour...Stone.fruit            0.081543  0.996670 0.2583  0.002 **
+Flavour...Tropical.fruit         0.081543  0.996670 0.2583  0.002 **
+Flavour...Red.fruit              0.081543  0.996670 0.2583  0.002 **
+Flavour...Black.fruit            0.081543  0.996670 0.2583  0.002 **
+Flavour...Herbaceous             0.081543  0.996670 0.2583  0.002 **
+Flavour...Herbal                 0.081543  0.996670 0.2583  0.002 **
+Flavour...Spice                  0.081543  0.996670 0.2583  0.002 **
+Flavour...Yeast.characteristics  0.081543  0.996670 0.2583  0.002 **
+Flavour...Oak.characters         0.081543  0.996670 0.2583  0.002 **
+Flavour...Tertiary.flavours      0.081543  0.996670 0.2583  0.002 **
+Flavour...other                  0.081543  0.996670 0.2583  0.002 **
+Mouth.feel...Body                0.081543  0.996670 0.2583  0.002 **
+Mouth.feel...Warmth.Alcohol      0.081543  0.996670 0.2583  0.002 **
+Mouth.feel...Astringency.Tannin -0.081543 -0.996670 0.2583  0.002 **
+Mouth.feel...Finish              0.081543  0.996670 0.2583  0.002 **
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+Permutation: free
+Number of permutations: 999
