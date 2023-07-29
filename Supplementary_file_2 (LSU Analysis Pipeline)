@@ -162,8 +162,7 @@ ordispider(nmds, Location, label = F)
 cols <- c('purple', 'green') 
 ordiellipse(nmds, Location, kind="se", conf=0.95, lwd=1, col = cols)
 ordispider(nmds, Location, col=cols, label = F)
-ordiellipse(nmds, Location, col = cols, kind = "ehull", lwd=3)
-legend('topleft', legend = "Bray Curtis, stress= 0.09", bty = "n",cex=1.2)
+legend('topleft', legend = "Bray Curtis, stress= 0.17", bty = "n",cex=1.2)
 
 #
 set.seed(711)
