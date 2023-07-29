@@ -183,22 +183,7 @@ ordispider(nmds, Location, label = F)
 cols <- c('purple', 'green') 
 ordiellipse(nmds, Location, kind="se", conf=0.95, lwd=1, col = cols)
 ordispider(nmds, Location, col=cols, label = F)
-ordiellipse(nmds, Location, col = cols, kind = "ehull", lwd=3)
-legend('topleft', legend = "Bray Curtis, stress= 0.09", bty = "n",cex=1.2)
-
-
-
-
-## Using Ordisurf
-
-ord<- nmds
-plot(ord, type="n")
-points(ord, display = "sites", cex = 2, pch = 15, col = "red")
-points(ord, display = "sites", cex = 2, pch = 15, col = c('green','green','green','green','purple','purple','purple','purple'))
-text(ord, display = "sites", cex = 2, col = c('green','green','green','green','purple','purple','purple','purple'))    ##Write Sample names
-ordisurf(ord, ENV$Aroma...Black.fruit, add = TRUE, k= 3,labcex=1.5)
-legend ('topleft', col = c('red'), lty = 1, legend = c('Aroma...Black.fruit'))
-legend('topleft', legend = "Stress = 0.058", bty = "n",cex=1.2)
+legend('topleft', legend = "Bray Curtis, stress= 0.20", bty = "n",cex=1.2)
 
 
 ##
